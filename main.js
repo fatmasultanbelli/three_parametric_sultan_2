@@ -145,3 +145,8 @@ function animate() {
 
 // EXECUTE MAIN
 main();
+
+// https://vitejs.dev/config/
+export default defineConfing({
+  base: "/three_parametric_sultan_2/",
+})
