@@ -29,6 +29,74 @@ let sceneHexagons = [];
 let resX = parameters.resolutionX;
 let rotX = parameters.rotationX;
 
+// Function to remove an object from the scene
+function removeObject(object) {
+  scene.remove(object);
+  object.geometry.dispose();
+  object.material.dispose();
+}
+
+// GEOMETRY FUNCTIONS
+function createHexagons() {
+  for (let i = -90; i < resX; i++) {
+    const geometry = new THREE.CircleGeometry(1, 4);
+    const material = new THREE.MeshPhysicalMaterial();
+    material.color = new THREE.Color(0xffffff);
+    material.color.setRGB(80, 1, Math.random());
+
+    const hexagon = new THREE.Mesh(geometry, material);
+    hexagon.position.set(i * 0, i * 0, 0);
+    hexagon.name = "hexagon " + i;
+    sceneHexagons.push(hexagon);
+
+    scene.add(hexagon);
+  }
+}
+
+function rotateHexagons() {
+  sceneHexagons.forEach((element, index) => {
+    let scene_hexagon = scene.getObjectByName(element.name);
+    let rotationAmount = (index * (rotX / resX)) * (Math.PI / 180);
+    let rotationMatrix = new THREE.Matrix4().makeRotationY(rotationAmount);
+    scene_hexagon.applyMatrix4(rotationMatrix);
+  });
+}
+
+function removeHexagons() {
+  resX = parameters.resolutionX;
+  rotX = parameters.rotationX;
+  sceneHexagons.forEach(element => {
+    let scene_hexagon = scene.getObjectByName(element.name);
+    removeObject(scene_hexagon);
+  });
+  sceneHexagons = [];
+}
+
+// RESPONSIVE
+function handleResize() {
+  width = window.innerWidth;
+  height = window.innerHeight;
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+  renderer.setSize(width, height);
+  renderer.render(scene, camera);
+}
+
+// ANIMATE AND RENDER
+function animate() {
+  requestAnimationFrame(animate);
+
+  control.update();
+
+  if (resX !== parameters.resolutionX || rotX !== parameters.rotationX) {
+    removeHexagons();
+    createHexagons();
+    rotateHexagons();
+  }
+
+  renderer.render(scene, camera);
+}
+
 function main() {
   // GUI
   gui = new GUI;
@@ -72,82 +140,7 @@ function main() {
   animate();
 }
 
-//-----------------------------------------------------------------------------------
-// HELPER FUNCTIONS
-//-----------------------------------------------------------------------------------
-// GEOMETRY FUNCTIONS
-
-function createHexagons() {
-  for (let i = 0; i < resX; i++) {
-    const geometry = new THREE.CircleGeometry(1, 6); // Use CircleGeometry for a hexagon
-    const material = new THREE.MeshPhysicalMaterial();
-    material.color = new THREE.Color(0xffffff);
-    material.color.setRGB(0, 0, Math.random());
-
-    const hexagon = new THREE.Mesh(geometry, material);
-    hexagon.position.set(i * 0, i * 0, 0); // Adjust the position for hexagons
-    hexagon.name = "hexagon " + i;
-    sceneHexagons.push(hexagon);
-
-    scene.add(hexagon);
-  }
-}
-
-// Rotate Hexagons
-function rotateHexagons() {
-  sceneHexagons.forEach((element, index) => {
-    let scene_hexagon = scene.getObjectByName(element.name);
-    let radian_rot = (index * (rotX / resX)) * (Math.PI / 180);
-    scene_hexagon.rotation.set(0, radian_rot, 0); // Adjust rotation for hexagons
-    rotX = parameters.rotationX;
-  })
-}
-
-// Remove the hexagons
-function removeHexagons() {
-  resX = parameters.resolutionX;
-  rotX = parameters.rotationX;
-  sceneHexagons.forEach(element => {
-    let scene_hexagon = scene.getObjectByName(element.name);
-    removeObject(scene_hexagon);
-  })
-  sceneHexagons = [];
-}
-
-// RESPONSIVE
-function handleResize() {
-  width = window.innerWidth;
-  height = window.innerHeight;
-  camera.aspect = width / height;
-  camera.updateProjectionMatrix();
-  renderer.setSize(width, height);
-  renderer.render(scene, camera);
-}
-
-// ANIMATE AND RENDER
-function animate() {
-  requestAnimationFrame(animate);
-
-  control.update();
-
-  if (resX !== parameters.resolutionX) {
-    removeHexagons();
-    createHexagons();
-    rotateHexagons();
-  }
-
-  if (rotX !== parameters.rotationX) {
-    rotateHexagons();
-  }
-
-  renderer.render(scene, camera);
-}
-
 // EXECUTE MAIN
 main();
 
-// https://vitejs.dev/config/
-export default defineConfing({
-  base: "/three_parametric_sultan_2/",
-});
 
