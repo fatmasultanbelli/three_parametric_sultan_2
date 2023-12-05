@@ -39,7 +39,7 @@ function removeObject(object) {
 // GEOMETRY FUNCTIONS
 function createHexagons() {
   for (let i = -90; i < resX; i++) {
-    const geometry = new THREE.CircleGeometry(1, 4);
+    const geometry = new THREE.CircleGeometry(1, 6);
     const material = new THREE.MeshPhysicalMaterial();
     material.color = new THREE.Color(0xffffff);
     material.color.setRGB(80, 1, Math.random());
